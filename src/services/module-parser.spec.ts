@@ -105,6 +105,22 @@ describe('Molecule Parser Service', () => {
       expect(extractSubMolecules('K4[(SO3)2]2')).toEqual(result);
     });
 
+    it('should return a map bigger number enclosed', () => {
+      const result = new Map<string, MatchedMolecule>([
+        [
+          '(SO4)125',
+          {
+            pattern: '(SO4)125',
+            molecule: 'SO4',
+            multiplyInnerAtomsBy: 125,
+            moleculeWithMultiplier: 'S125O500',
+          },
+        ],
+      ]);
+
+      expect(extractSubMolecules('(SO4)125')).toEqual(result);
+    });
+
     it('should throw exception while molecule is wrongly formatted', () => {
       expect(() => extractSubMolecules('K4[(SO32]2')).toThrow(
         EnclosureMissMatchException,

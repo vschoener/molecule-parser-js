@@ -8,7 +8,7 @@
  */
 
 // This Regex will match each possible subset of molecule using lazy
-const extractSubMoleculeRegex = /([([{])+?([\d\w]*)([\])}])+?(\d)*/g;
+const extractSubMoleculeRegex = /([([{])([\d\w]*)([\])}])(\d)*/g;
 
 /**
  * This regex extract atoms from molecule

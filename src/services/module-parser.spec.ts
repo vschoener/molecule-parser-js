@@ -56,7 +56,7 @@ describe('Molecule Parser Service', () => {
       expect(extractSubMolecules('Mg(OH)2H(CiOh2)3')).toEqual(result);
     });
 
-    it('should return a map of sub molecules when only will match', () => {
+    it('should return a map of sub molecules when only one match', () => {
       const result = new Map<string, MatchedMolecule>([
         [
           '(OH)2',
@@ -70,6 +70,22 @@ describe('Molecule Parser Service', () => {
       ]);
 
       expect(extractSubMolecules('Mg(OH)2')).toEqual(result);
+    });
+
+    it('should return a map when encloser are close of each one', () => {
+      const result = new Map<string, MatchedMolecule>([
+        [
+          '(SO3)2',
+          {
+            pattern: '(SO3)2',
+            molecule: 'SO3',
+            multiplyInnerAtomsBy: 2,
+            moleculeWithMultiplier: 'S2O6',
+          },
+        ],
+      ]);
+
+      expect(extractSubMolecules('K4[(SO3)2]2')).toEqual(result);
     });
   });
 
@@ -176,6 +192,16 @@ describe('Molecule Parser Service', () => {
           ['K', 4],
           ['O', 14],
           ['N', 2],
+          ['S', 4],
+        ]),
+      );
+    });
+
+    it('should parse K4[(SO3)2]2', () => {
+      expect(parseMolecule('K4[(SO3)2]2')).toEqual(
+        new Map([
+          ['K', 4],
+          ['O', 12],
           ['S', 4],
         ]),
       );

@@ -1,3 +1,4 @@
+import { EnclosureMissMatchException } from '../exceptions/EnclosureMissMatchException';
 import {
   extractAtoms,
   extractSubMolecules,
@@ -72,6 +73,22 @@ describe('Molecule Parser Service', () => {
       expect(extractSubMolecules('Mg(OH)2')).toEqual(result);
     });
 
+    it('should return a map of sub molecules when only one match with no number', () => {
+      const result = new Map<string, MatchedMolecule>([
+        [
+          '(OH)',
+          {
+            pattern: '(OH)',
+            molecule: 'OH',
+            multiplyInnerAtomsBy: 1,
+            moleculeWithMultiplier: 'O1H1',
+          },
+        ],
+      ]);
+
+      expect(extractSubMolecules('Mg(OH)')).toEqual(result);
+    });
+
     it('should return a map when encloser are close of each one', () => {
       const result = new Map<string, MatchedMolecule>([
         [
@@ -86,6 +103,12 @@ describe('Molecule Parser Service', () => {
       ]);
 
       expect(extractSubMolecules('K4[(SO3)2]2')).toEqual(result);
+    });
+
+    it('should throw exception while molecule is wrongly formatted', () => {
+      expect(() => extractSubMolecules('K4[(SO32]2')).toThrow(
+        EnclosureMissMatchException,
+      );
     });
   });
 
@@ -203,6 +226,16 @@ describe('Molecule Parser Service', () => {
           ['K', 4],
           ['O', 12],
           ['S', 4],
+        ]),
+      );
+    });
+
+    it('should parse K4[(SO3)]2', () => {
+      expect(parseMolecule('K4[(SO3)]2')).toEqual(
+        new Map([
+          ['K', 4],
+          ['O', 6],
+          ['S', 2],
         ]),
       );
     });

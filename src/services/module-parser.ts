@@ -7,6 +7,14 @@
  * And finally we create and returns a dataset from the easier updated molecule form
  */
 
+import { EnclosureMissMatchException } from '../exceptions/EnclosureMissMatchException';
+
+const enclosures = {
+  '[': ']',
+  '(': ')',
+  '{': '}',
+};
+
 // This Regex will match each possible subset of molecule using lazy
 const extractSubMoleculeRegex = /([([{])([\d\w]*)([\])}])(\d)*/g;
 
@@ -40,7 +48,20 @@ export const extractSubMolecules = (
 
   const formattedMolecules = new Map<string, MatchedMolecule>();
   for (const matchedSubMolecule of matchedSubMolecules) {
-    const [pattern, , molecule, , atomMultiplier] = matchedSubMolecule;
+    const [
+      pattern,
+      startByEnclosure,
+      molecule,
+      endByEnclosure,
+      atomMultiplier,
+    ] = matchedSubMolecule;
+
+    if (enclosures[startByEnclosure] !== endByEnclosure) {
+      throw new EnclosureMissMatchException(
+        'Parsing issue with open and close sub molecule',
+        matchedSubMolecule,
+      );
+    }
 
     const multiplier = Number(atomMultiplier || 1);
     formattedMolecules.set(pattern, {
